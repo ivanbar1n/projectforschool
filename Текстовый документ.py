@@ -9,7 +9,6 @@ def execute_commands():
     try:
         # Очистка экрана черепахи
         turtle.clear()
-
         # Получение команд из текстового поля
         commands = command_block.get("1.0", tk.END).strip().split("\n")
 
@@ -41,21 +40,11 @@ root = tk.Tk()
 root.title("Проект")
 root.geometry("1920x1080")
 
-frame = Frame(
-   root,
-   padx=10,
-   pady=10,
-   width=100,
-   height=100
-)
+frame = Frame(root,padx=10,pady=10,width=1000,height=1000)
 frame = Frame(master=root,width=50,height=60, relief=SUNKEN, borderwidth=0)
-method_lbl = Label(
-   frame,
-   text="Инструменты"
-)
+method_lbl = Label(frame,text="Инструменты",width=100,height=10)
 frame.pack(side=tk.LEFT, anchor=tk.NE)
 method_lbl.grid(row=1, column=1)
-
 frame.place(x=95, y=10)
 
 
@@ -63,7 +52,6 @@ frame.place(x=95, y=10)
 tool_frame = tk.Frame(root)
 tool_frame.pack(side=tk.LEFT, padx=10, pady=10)
 
-# Изображение
 
 # Кнопки для инструментов
 tk.Button(tool_frame, text="Вперёд", command=lambda: add_command("вперёд")).pack(pady=5)
@@ -118,7 +106,7 @@ images = []
 
 for path in image_paths:
     img = Image.open(path)  # Открываем изображение с помощью PIL
-    img = img.resize((1000,1000), Image.ANTIALIAS)  # Масштабируем изображение
+    img = img.resize((700,900), Image.ANTIALIAS)  # Масштабируем изображение
     img_tk = ImageTk.PhotoImage(img)  # Конвертируем в формат, поддерживаемый tkinter
     images.append(img_tk)
 
@@ -128,14 +116,17 @@ current_image_index = 0
 # Создание метки для отображения изображения
 label = tk.Label(root, image=images[current_image_index])
 label.pack(pady=10)
-
+label.place(x=10,y=100)
 # Создание кнопки для перехода к следующему изображению
 next_button = tk.Button(root, text="Условие", command=next_image)
 next_button.pack(side=tk.RIGHT, padx=10, pady=10)
 next_button.place(x=100, y=300)
 
+img = Image.open("C:\\Users\\ИВАН\Desktop\\bluecircle.png")  # Укажите путь к вашему изображению
+photo = ImageTk.PhotoImage(img)
+
 # Создание кнопки для возврата к предыдущему изображению
-previous_button = tk.Button(root, text="Движение", command=previous_image, state=tk.DISABLED)
+previous_button = tk.Button(root, image=photo, command=previous_image, state=tk.DISABLED)
 previous_button.pack(side=tk.LEFT, padx=10, pady=10)
 previous_button.place(x=100,y=100)
 # Размеры поля
@@ -166,6 +157,7 @@ def draw_grid(canvas):
             x0, y0 = j * CELL_SIZE, i * CELL_SIZE
             x1, y1 = x0 + CELL_SIZE, y0 + CELL_SIZE
             canvas.create_rectangle(x0, y0, x1, y1, fill=grid[i][j], outline="black")
+
 
 # Функция для перетаскивания стенок
 def drag_wall(event):
@@ -219,7 +211,7 @@ def on_key_press(event):
 # Создание холста
 canvas = tk.Canvas(root, width=GRID_SIZE * CELL_SIZE, height=GRID_SIZE * CELL_SIZE)
 canvas.pack()
-canvas.place(x=1200,y=200)
+canvas.place(x=1400,y=200)
 
 # Привязка событий
 canvas.bind("<B1-Motion>", drag_wall)
