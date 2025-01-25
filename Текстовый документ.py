@@ -1,10 +1,9 @@
-
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import *
 import turtle
 import tkinter.ttk as ttk
-
+from PIL import Image, ImageTk
 # Функция для выполнения команд
 def execute_commands():
     try:
@@ -49,7 +48,7 @@ frame = Frame(
    width=100,
    height=100
 )
-frame = Frame(master=root,width=50,height=60,bg="gray", relief=SUNKEN, borderwidth=5)
+frame = Frame(master=root,width=50,height=60, relief=SUNKEN, borderwidth=0)
 method_lbl = Label(
    frame,
    text="Инструменты"
@@ -64,6 +63,7 @@ frame.place(x=95, y=10)
 tool_frame = tk.Frame(root)
 tool_frame.pack(side=tk.LEFT, padx=10, pady=10)
 
+# Изображение
 
 # Кнопки для инструментов
 tk.Button(tool_frame, text="Вперёд", command=lambda: add_command("вперёд")).pack(pady=5)
@@ -71,20 +71,73 @@ tk.Button(tool_frame, text="Назад ", command=lambda: add_command("наза�
 tk.Button(tool_frame, text="Вправо", command=lambda: add_command("вправо")).pack(pady=5)
 tk.Button(tool_frame, text="Влево ", command=lambda: add_command("влево ")).pack(pady=5)
 
-# Поле с блоками команд
-command_block = tk.Text(root, height=50, width=50)
-command_block.pack(side=tk.LEFT, padx=10, pady=10)
 
 
 field = tk.Text(root, height=50, width=50)
 field.pack(side=tk.LEFT, padx=10, pady=10)
+field.place(x=700, y=200)
+
 # Кнопка для выполнения команд
-execute_button = tk.Button(root, text="Выполнить", command=execute_commands)
-execute_button.pack(side=tk.LEFT, padx=10, pady=10)
-execute_button.place(x=1000, y=10)
+def next_image():
+    global current_image_index, label, next_button, previous_button
+
+    # Увеличиваем индекс текущего изображения
+    current_image_index += 1
+
+    # Обновляем изображение на экране
+    label.config(image=images[current_image_index])
+
+    # Делаем кнопку "Предыдущее изображение" активной
+    previous_button.config(state=tk.NORMAL)
+
+    # Если достигнуто последнее изображение, делаем кнопку "Следующее изображение" неактивной
+    if current_image_index == len(images) - 1:
+        next_button.config(state=tk.DISABLED)
+
+# Функция для возврата к предыдущему изображению
+def previous_image():
+    global current_image_index, label, next_button, previous_button
+
+    # Уменьшаем индекс текущего изображения
+    current_image_index -= 1
+
+    # Обновляем изображение на экране
+    label.config(image=images[current_image_index])
+
+    # Делаем кнопку "Следующее изображение" активной
+    next_button.config(state=tk.NORMAL)
+
+    # Если достигнуто первое изображение, делаем кнопку "Предыдущее изображение" неактивной
+    if current_image_index == 0:
+        previous_button.config(state=tk.DISABLED)
 
 
+# Загрузка изображений
+image_paths = ["C:\\Users\\ИВАН\\Desktop\\menu.png","C:\\Users\\ИВАН\\Desktop\\menu2.png"]  # Укажите пути к вашим изображениям
+images = []
 
+for path in image_paths:
+    img = Image.open(path)  # Открываем изображение с помощью PIL
+    img = img.resize((1000,1000), Image.ANTIALIAS)  # Масштабируем изображение
+    img_tk = ImageTk.PhotoImage(img)  # Конвертируем в формат, поддерживаемый tkinter
+    images.append(img_tk)
+
+# Индекс текущего изображения
+current_image_index = 0
+
+# Создание метки для отображения изображения
+label = tk.Label(root, image=images[current_image_index])
+label.pack(pady=10)
+
+# Создание кнопки для перехода к следующему изображению
+next_button = tk.Button(root, text="Условие", command=next_image)
+next_button.pack(side=tk.RIGHT, padx=10, pady=10)
+next_button.place(x=100, y=300)
+
+# Создание кнопки для возврата к предыдущему изображению
+previous_button = tk.Button(root, text="Движение", command=previous_image, state=tk.DISABLED)
+previous_button.pack(side=tk.LEFT, padx=10, pady=10)
+previous_button.place(x=100,y=100)
 # Размеры поля
 GRID_SIZE = 10
 CELL_SIZE = 50
@@ -166,6 +219,7 @@ def on_key_press(event):
 # Создание холста
 canvas = tk.Canvas(root, width=GRID_SIZE * CELL_SIZE, height=GRID_SIZE * CELL_SIZE)
 canvas.pack()
+canvas.place(x=1200,y=200)
 
 # Привязка событий
 canvas.bind("<B1-Motion>", drag_wall)
