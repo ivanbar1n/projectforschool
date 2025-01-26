@@ -43,7 +43,7 @@ def create_new_block(x, y):
     global block_counter
     block_counter += 1
     text = str(block_counter)
-    block = tk.Label(root, text=text, bg="lightgreen", padx=20, pady=10)
+    block = tk.Label(root, text=text, bg="Blue", padx=20, pady=10)
     block.place(x=x, y=y)
     block.bind("<Button-1>", start_drag)  # Начало перемещения
     block.bind("<B1-Motion>", drag)       # Перемещение
@@ -59,22 +59,22 @@ drop_zone.place(x=drop_zone_x, y=drop_zone_y)
 
 # Создание начальных блоков
 block_counter = 3  # Счётчик для создания новых блоков
-blocks = ["1", "2", "3"]
+blocks = ["Вперед", "Назад", "Вправо","Влево"]
 
 for i, text in enumerate(blocks):
-    block = tk.Label(root, text=text, bg="lightgreen", padx=20, pady=10)
+    block = tk.Label(root, text=text, bg="Blue", padx=20, pady=10)
     block.place(x=50 + i * 100, y=50)
     block.bind("<Button-1>", start_drag)  # Начало перемещения
     block.bind("<B1-Motion>", drag)       # Перемещение
     block.bind("<ButtonRelease-1>", stop_drag)  # Завершение перемещения
 
 
-frame = Frame(root,padx=10,pady=10,width=1000,height=1000)
-frame = Frame(master=root,width=50,height=60, relief=SUNKEN, borderwidth=0)
-method_lbl = Label(frame,text="Инструменты",width=100,height=10)
-frame.pack(side=tk.LEFT, anchor=tk.NE)
+text_tools = Frame(root,padx=10,pady=10)
+text_tools = Frame(master=root, relief=SUNKEN, borderwidth=0)
+method_lbl = Label(text_tools,text="Инструменты",font=("Arial", 20))
+text_tools.pack(side=tk.LEFT, anchor=tk.NE)
 method_lbl.grid(row=1, column=1)
-frame.place(x=95, y=10)
+text_tools.place(x=95, y=10)
 
 
 # Поле с инструментами
@@ -85,7 +85,7 @@ tool_frame.pack(side=tk.LEFT, padx=10, pady=10)
 
 # Кнопка для выполнения команд
 def next_image():
-    global current_image_index, label, next_button, previous_button
+    global current_image_index, label, green_button, blue_button
 
     # Увеличиваем индекс текущего изображения
     current_image_index += 1
@@ -94,15 +94,15 @@ def next_image():
     label.config(image=images[current_image_index])
 
     # Делаем кнопку "Предыдущее изображение" активной
-    previous_button.config(state=tk.NORMAL)
+    blue_button.config(state=tk.NORMAL)
 
     # Если достигнуто последнее изображение, делаем кнопку "Следующее изображение" неактивной
     if current_image_index == len(images) - 1:
-        next_button.config(state=tk.DISABLED)
+        green_button.config(state=tk.DISABLED)
 
 # Функция для возврата к предыдущему изображению
 def previous_image():
-    global current_image_index, label, next_button, previous_button
+    global current_image_index, label, green_button, blue_button
 
     # Уменьшаем индекс текущего изображения
     current_image_index -= 1
@@ -111,11 +111,11 @@ def previous_image():
     label.config(image=images[current_image_index])
 
     # Делаем кнопку "Следующее изображение" активной
-    next_button.config(state=tk.NORMAL)
+    green_button.config(state=tk.NORMAL)
 
     # Если достигнуто первое изображение, делаем кнопку "Предыдущее изображение" неактивной
     if current_image_index == 0:
-        previous_button.config(state=tk.DISABLED)
+        blue_button.config(state=tk.DISABLED)
 
 
 # Загрузка изображений
@@ -128,30 +128,61 @@ for path in image_paths:
     img_tk = ImageTk.PhotoImage(img)  # Конвертируем в формат, поддерживаемый tkinter
     images.append(img_tk)
 
+def move_button1():
+    # Новые координаты (x, y)
+    new_x = 50
+    new_y = 100
+    blue_button.place(x=new_x, y=new_y)  # Перемещаем кнопку
+    new_x1 = 10
+    new_y1 = 250
+    green_button.place(x=new_x1,y=new_y1)
 # Индекс текущего изображения
 current_image_index = 0
-img1 = Image.open("C:\\Users\\ИВАН\\Desktop\\greeencircle.png")  # Укажите путь к вашему изображению
-photo1 = ImageTk.PhotoImage(img1)
+second_button = Image.open("C:\\Users\\ИВАН\\Desktop\\greeencircle.png")  # Укажите путь к вашему изображению
+greencircle = ImageTk.PhotoImage(second_button)
 # Создание метки для отображения изображения
 label = tk.Label(root, image=images[current_image_index])
 label.pack(pady=10)
 label.place(x=10,y=100)
 # Создание кнопки для перехода к следующему изображению
-next_button = tk.Button(root, image=photo1, command=next_image)
-next_button.pack(side=tk.RIGHT, padx=10, pady=10)
-next_button.place(x=10, y=250)
 
-img = Image.open("C:\\Users\\ИВАН\Desktop\\bluecircle.png")  # Укажите путь к вашему изображению
-photo = ImageTk.PhotoImage(img)
+def move_button():
+    # Новые координаты (x, y)
+    new_x = 10
+    new_y = 350
+    blue_button.place(x=new_x, y=new_y)  # Перемещаем кнопку
+    new_x1 = 50
+    new_y1 = 100
+    green_button.place(x=new_x1,y=new_y1)
 
+
+green_button = tk.Button(root, image=greencircle, command=lambda:(next_image(), move_button()))
+green_button.pack(side=tk.RIGHT, padx=10, pady=10)
+green_button.place(x=10, y=250)
+green_button["bg"] = root["bg"]
+first_button = Image.open("C:\\Users\\ИВАН\Desktop\\bluecircle.png")  # Укажите путь к вашему изображению
+bluecircle = ImageTk.PhotoImage(first_button)
 
 # Создание кнопки для возврата к предыдущему изображению
-previous_button = tk.Button(root, image=photo, command=previous_image, state=tk.DISABLED)
-previous_button.pack(side=tk.LEFT, padx=10, pady=10)
-previous_button.place(x=50,y=100)
+blue_button = tk.Button(root, image=bluecircle, command=lambda:(previous_image(), move_button1()), state=tk.DISABLED)
+blue_button.pack(side=tk.LEFT, padx=10, pady=10)
+blue_button.place(x=50,y=100)
+blue_button["bg"] = root["bg"]
+
+width_length_label = tk.Label(root, text="Ширина и Высота:")
+width_length_label.pack(pady=5)
+width_length_entry = tk.Entry(root)
+width_length_entry.pack(pady=5)
+size_label = tk.Label(root, text="Размер клеток:")
+size_label.pack(pady=5)
+size_entry = tk.Entry(root)
+size_entry.pack(pady=5)
 # Размеры поля
-GRID_SIZE = 10
-CELL_SIZE = 50
+GRID_SIZE = width_length_entry.get()
+CELL_SIZE = size_entry.get()
+
+GRID_SIZE = 5
+CELL_SIZE = 5
 
 # Цвета
 WATER_COLOR = "blue"
@@ -232,6 +263,10 @@ def on_key_press(event):
 canvas = tk.Canvas(root, width=GRID_SIZE * CELL_SIZE, height=GRID_SIZE * CELL_SIZE)
 canvas.pack()
 canvas.place(x=1400,y=200)
+
+create_button = tk.Button(root, text="Создать Canvas", command=canvas)
+create_button.pack(pady=10)
+create_button.place(x=1200,y=200)
 
 # Привязка событий
 canvas.bind("<B1-Motion>", drag_wall)
