@@ -4,41 +4,70 @@ from tkinter import *
 import turtle
 import tkinter.ttk as ttk
 from PIL import Image, ImageTk
-# Функция для выполнения команд
-def execute_commands():
-    try:
-        # Очистка экрана черепахи
-        turtle.clear()
-        # Получение команд из текстового поля
-        commands = command_block.get("1.0", tk.END).strip().split("\n")
-
-        # Выполнение команд
-        for command in commands:
-            if command.startswith("вперёд"):
-                distance = int(command.split()[1])
-                turtle.forward(distance)
-            elif command.startswith("назад"):
-                distance = int(command.split()[1])
-                turtle.backward(distance)
-            elif command.startswith("вправо"):
-                angle = int(command.split()[1])
-                turtle.right(angle)
-            elif command.startswith("влево"):
-                angle = int(command.split()[1])
-                turtle.left(angle)
-            else:
-                messagebox.showerror("Ошибка", f"Неизвестная команда: {command}")
-    except Exception as e:
-        messagebox.showerror("Ошибка", f"Ошибка выполнения команды: {e}")
-
-# Функция для добавления команды в блок
-def add_command(command):
-    command_block.insert(tk.END, command + "\n")
 
 # Создание основного окна
 root = tk.Tk()
 root.title("Проект")
 root.geometry("1920x1080")
+
+def start_drag(event):
+    widget = event.widget
+    widget.startX = event.x
+    widget.startY = event.y
+
+# Функция для перемещения блока
+def drag(event):
+    widget = event.widget
+    x = widget.winfo_x() - widget.startX + event.x
+    y = widget.winfo_y() - widget.startY + event.y
+    widget.place(x=x, y=y)
+
+# Функция для завершения перемещения и проверки, попал ли блок в зону
+def stop_drag(event):
+    widget = event.widget
+    x = widget.winfo_x()
+    y = widget.winfo_y()
+
+    # Проверка, находится ли блок внутри зоны
+    if (drop_zone_x <= x <= drop_zone_x + drop_zone_width and
+        drop_zone_y <= y <= drop_zone_y + drop_zone_height):
+        # Перемещаем блок в центр зоны
+        widget.place(x=drop_zone_x + (drop_zone_width - widget.winfo_width()) // 2,
+                     y=drop_zone_y + (drop_zone_height - widget.winfo_height()) // 2)
+        
+        # Создаём новый блок на месте старого
+        create_new_block(widget.startX, widget.startY)
+
+# Функция для создания нового блока
+def create_new_block(x, y):
+    global block_counter
+    block_counter += 1
+    text = str(block_counter)
+    block = tk.Label(root, text=text, bg="lightgreen", padx=20, pady=10)
+    block.place(x=x, y=y)
+    block.bind("<Button-1>", start_drag)  # Начало перемещения
+    block.bind("<B1-Motion>", drag)       # Перемещение
+    block.bind("<ButtonRelease-1>", stop_drag)  # Завершение перемещения
+
+
+# Создание зоны, куда можно поместить блоки
+drop_zone_x, drop_zone_y = 1000, 400
+drop_zone_width, drop_zone_height = 200, 100
+
+drop_zone = tk.Canvas(root, width=drop_zone_width, height=drop_zone_height, bg="lightblue")
+drop_zone.place(x=drop_zone_x, y=drop_zone_y)
+
+# Создание начальных блоков
+block_counter = 3  # Счётчик для создания новых блоков
+blocks = ["1", "2", "3"]
+
+for i, text in enumerate(blocks):
+    block = tk.Label(root, text=text, bg="lightgreen", padx=20, pady=10)
+    block.place(x=50 + i * 100, y=50)
+    block.bind("<Button-1>", start_drag)  # Начало перемещения
+    block.bind("<B1-Motion>", drag)       # Перемещение
+    block.bind("<ButtonRelease-1>", stop_drag)  # Завершение перемещения
+
 
 frame = Frame(root,padx=10,pady=10,width=1000,height=1000)
 frame = Frame(master=root,width=50,height=60, relief=SUNKEN, borderwidth=0)
@@ -53,17 +82,6 @@ tool_frame = tk.Frame(root)
 tool_frame.pack(side=tk.LEFT, padx=10, pady=10)
 
 
-# Кнопки для инструментов
-tk.Button(tool_frame, text="Вперёд", command=lambda: add_command("вперёд")).pack(pady=5)
-tk.Button(tool_frame, text="Назад ", command=lambda: add_command("назад ")).pack(pady=5)
-tk.Button(tool_frame, text="Вправо", command=lambda: add_command("вправо")).pack(pady=5)
-tk.Button(tool_frame, text="Влево ", command=lambda: add_command("влево ")).pack(pady=5)
-
-
-
-field = tk.Text(root, height=50, width=50)
-field.pack(side=tk.LEFT, padx=10, pady=10)
-field.place(x=700, y=200)
 
 # Кнопка для выполнения команд
 def next_image():
@@ -112,23 +130,25 @@ for path in image_paths:
 
 # Индекс текущего изображения
 current_image_index = 0
-
+img1 = Image.open("C:\\Users\\ИВАН\\Desktop\\greeencircle.png")  # Укажите путь к вашему изображению
+photo1 = ImageTk.PhotoImage(img1)
 # Создание метки для отображения изображения
 label = tk.Label(root, image=images[current_image_index])
 label.pack(pady=10)
 label.place(x=10,y=100)
 # Создание кнопки для перехода к следующему изображению
-next_button = tk.Button(root, text="Условие", command=next_image)
+next_button = tk.Button(root, image=photo1, command=next_image)
 next_button.pack(side=tk.RIGHT, padx=10, pady=10)
-next_button.place(x=100, y=300)
+next_button.place(x=10, y=250)
 
 img = Image.open("C:\\Users\\ИВАН\Desktop\\bluecircle.png")  # Укажите путь к вашему изображению
 photo = ImageTk.PhotoImage(img)
 
+
 # Создание кнопки для возврата к предыдущему изображению
 previous_button = tk.Button(root, image=photo, command=previous_image, state=tk.DISABLED)
 previous_button.pack(side=tk.LEFT, padx=10, pady=10)
-previous_button.place(x=100,y=100)
+previous_button.place(x=50,y=100)
 # Размеры поля
 GRID_SIZE = 10
 CELL_SIZE = 50
@@ -222,48 +242,4 @@ root.bind("<KeyPress>", on_key_press)
 # Начальная отрисовка поля
 draw_grid(canvas)
 
-# Функция для начала перемещения блока
-def start_drag(event):
-    widget = event.widget
-    widget.startX = event.x
-    widget.startY = event.y
-
-# Функция для перемещения блока
-def drag(event):
-    widget = event.widget
-    x = widget.winfo_x() - widget.startX + event.x
-    y = widget.winfo_y() - widget.startY + event.y
-    widget.place(x=x, y=y)
-
-# Функция для завершения перемещения и проверки, попал ли блок в область
-def stop_drag(event):
-    widget = event.widget
-    x = widget.winfo_x()
-    y = widget.winfo_y()
-
-    # Проверка, находится ли блок внутри области
-    if (drop_zone_x <= x <= drop_zone_x + drop_zone_width and
-        drop_zone_y <= y <= drop_zone_y + drop_zone_height):
-        print("Блок помещён в область!")
-    else:
-        print("Блок вне области.")
-
-
-
-# Создание области, куда можно поместить блок
-drop_zone_x, drop_zone_y = 1400, 600
-drop_zone_width, drop_zone_height = 60, 60
-
-drop_zone = tk.Canvas(root, width=drop_zone_width, height=drop_zone_height, bg="lightblue")
-drop_zone.place(x=drop_zone_x, y=drop_zone_y)
-
-# Создание перетаскиваемого блока
-block = tk.Canvas(root, width=50, height=50, bg="red")
-block.place(x=1400, y=600)
-
-# Привязка событий мыши к блоку
-block.bind("<Button-1>", start_drag)  # Начало перемещения
-block.bind("<B1-Motion>", drag)       # Перемещение
-block.bind("<ButtonRelease-1>", stop_drag)  # Завершение перемещения
-# Запуск основного цикла
 root.mainloop()
