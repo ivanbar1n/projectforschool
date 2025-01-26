@@ -36,20 +36,44 @@ def stop_drag(event):
                      y=drop_zone_y + (drop_zone_height - widget.winfo_height()) // 2)
         
         # Создаём новый блок на месте старого
-        create_new_block(widget.startX, widget.startY)
+        
+        create_new_block_forward(widget.startX, widget.startY)
+        create_new_block_back(widget.startX, widget.startY)
+        create_new_block_left(widget.startX, widget.startY)
+        create_new_block_right(widget.startX, widget.startY)
 
 # Функция для создания нового блока
-def create_new_block(x, y):
-    global block_counter
-    block_counter += 1
-    text = str(block_counter)
+def create_new_block_forward(x,y):
+    text = str(block_forward)
     block = tk.Label(root, text=text, bg="Blue", padx=20, pady=10)
-    block.place(x=x, y=y)
+    block.place(x=100, y=100)
     block.bind("<Button-1>", start_drag)  # Начало перемещения
     block.bind("<B1-Motion>", drag)       # Перемещение
     block.bind("<ButtonRelease-1>", stop_drag)  # Завершение перемещения
 
+def create_new_block_back(x,y):
+    text = str(block_back)
+    block = tk.Label(root, text=text, bg="Blue", padx=20, pady=10)
+    block.place(x=100, y=200)
+    block.bind("<Button-1>", start_drag)  # Начало перемещения
+    block.bind("<B1-Motion>", drag)       # Перемещение
+    block.bind("<ButtonRelease-1>", stop_drag) 
 
+def create_new_block_left(x,y):
+    text = str(block_left)
+    block = tk.Label(root, text=text, bg="Blue", padx=20, pady=10)
+    block.place(x=100, y=300)
+    block.bind("<Button-1>", start_drag)  # Начало перемещения
+    block.bind("<B1-Motion>", drag)       # Перемещение
+    block.bind("<ButtonRelease-1>", stop_drag) 
+
+def create_new_block_right(x,y):
+    text = str(block_right)
+    block = tk.Label(root, text=text, bg="Blue", padx=20, pady=10)
+    block.place(x=100, y=400)
+    block.bind("<Button-1>", start_drag)  # Начало перемещения
+    block.bind("<B1-Motion>", drag)       # Перемещение
+    block.bind("<ButtonRelease-1>", stop_drag) 
 # Создание зоны, куда можно поместить блоки
 drop_zone_x, drop_zone_y = 1000, 400
 drop_zone_width, drop_zone_height = 200, 100
@@ -58,16 +82,17 @@ drop_zone = tk.Canvas(root, width=drop_zone_width, height=drop_zone_height, bg="
 drop_zone.place(x=drop_zone_x, y=drop_zone_y)
 
 # Создание начальных блоков
-block_counter = 3  # Счётчик для создания новых блоков
 blocks = ["Вперед", "Назад", "Вправо","Влево"]
-
+block_forward = "Вперед"
+block_back = "Назад"
+block_left = "Влеов"
+block_right = "Вправо"
 for i, text in enumerate(blocks):
     block = tk.Label(root, text=text, bg="Blue", padx=20, pady=10)
-    block.place(x=50 + i * 100, y=50)
+    block.place(x=800, y=50+i*100)
     block.bind("<Button-1>", start_drag)  # Начало перемещения
     block.bind("<B1-Motion>", drag)       # Перемещение
     block.bind("<ButtonRelease-1>", stop_drag)  # Завершение перемещения
-
 
 text_tools = Frame(root,padx=10,pady=10)
 text_tools = Frame(master=root, relief=SUNKEN, borderwidth=0)
@@ -75,13 +100,6 @@ method_lbl = Label(text_tools,text="Инструменты",font=("Arial", 20))
 text_tools.pack(side=tk.LEFT, anchor=tk.NE)
 method_lbl.grid(row=1, column=1)
 text_tools.place(x=95, y=10)
-
-
-# Поле с инструментами
-tool_frame = tk.Frame(root)
-tool_frame.pack(side=tk.LEFT, padx=10, pady=10)
-
-
 
 # Кнопка для выполнения команд
 def next_image():
